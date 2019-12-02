@@ -8,7 +8,7 @@ function userank_plugin_create_menu() {
 	add_action( 'admin_init', 'register_userank_plugin_settings');
 }
 
-function register_my_cool_plugin_settings() {
+function register_userank_plugin_settings() {
     register_setting('userank-plugin-settings-group', 'colors');
     register_setting('userank-plugin-settings-group', 'ranks');
 }
