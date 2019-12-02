@@ -11,3 +11,10 @@ Version: 0.0.1
 Author: Tengoot
 Author URI: https://github.com/Tengoot
 */
+
+// Global variables land here
+
+if(!defined('USERANK_PLUGIN_DIR'))
+    define('USERANK_PLUGIN_DIR', dirname(__FILE__));
+// Includes
+include(USERNAME_PLUGIN_DIR . '/includes/options.php');
