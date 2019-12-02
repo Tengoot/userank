@@ -17,4 +17,4 @@ Author URI: https://github.com/Tengoot
 if(!defined('USERANK_PLUGIN_DIR'))
     define('USERANK_PLUGIN_DIR', dirname(__FILE__));
 // Includes
-include(USERNAME_PLUGIN_DIR . '/includes/options.php');
+include(USERANK_PLUGIN_DIR . '/includes/options.php');
