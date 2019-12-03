@@ -18,3 +18,6 @@ if(!defined('USERANK_PLUGIN_DIR'))
     define('USERANK_PLUGIN_DIR', dirname(__FILE__));
 // Includes
 include(USERANK_PLUGIN_DIR . '/includes/options.php');
+include(USERANK_PLUGIN_DIR . '/includes/points_table.php');
+
+register_activation_hook( __FILE__, 'userank_database_install' );
