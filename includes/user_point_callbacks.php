@@ -29,7 +29,7 @@ function points_for_post_creation($post_id, $post, $update) {
 	add_points($user_id, 'user', 10);
 }
 
-function points_for_comments_creation($comment_id, $comment_approved, $comment_data) {
+function points_for_comment_creation($comment_id, $comment_approved, $comment_data) {
 	$user_id = $comment_data['user_id'];
 	$comment_points = strlen($comment_data['comment_content']) > 150 ? 6 : 3;
 
