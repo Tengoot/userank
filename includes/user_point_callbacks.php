@@ -32,19 +32,17 @@ function points_for_post_creation($post_id, $post, $update) {
 function points_for_comment_creation($comment_id, $comment_approved, $comment_data) {
 	$user_id = $comment_data['user_id'];
 	$comment_points = strlen($comment_data['comment_content']) > 150 ? 6 : 3;
+	$post_id = $comment_data['comment_post_ID'];
+	$post = get_post($post_id);
+	$post_author_id = $post->post_author;
 
-	if ($user_id == 0 || is_super_admin($user_id))
+	if ($user_id == 0 || is_super_admin($user_id) || $user_id == $post_author_id)
 		return null;
 
 	add_points($user_id, 'user', $comment_points);
 
-	$post_id = $comment_data['comment_post_ID'];
-
-	add_points($post_id, 'post', $comment_points);
-
-	$post = get_post($post_id);
-	$post_author_id = $post->post_author;
-	if ($post_author_id != 0 || !is_super_admin($post_author_id)) {
+	if ($post_author_id != 0 && !is_super_admin($post_author_id)) {
+		add_points($post_id, 'post', $comment_points);
 		add_points($author_id, 'user', $comment_points);
 	}
 
