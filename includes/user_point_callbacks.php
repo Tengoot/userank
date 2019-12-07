@@ -45,9 +45,43 @@ function points_for_comment_creation($comment_id, $comment_approved, $comment_da
 		add_points($post_id, 'post', $comment_points);
 		add_points($author_id, 'user', $comment_points);
 	}
+}
 
+// For now, this hook depends on post-ratings plugin, check of rating spam depends on other plugin.
+// FOR NOW! Future implementation may include custom post rating system.
+function points_for_post_rating($meta_id, $post_id, $meta_key, $meta_value) {
+	if ($meta_key != 'rating' && !is_user_logged_in()) {
+		return null;
+	}
+
+	$user = wp_get_current_user();
+	$points = null;
+	$post = get_post($post_id);
+	$post_author_id = $post->post_author;
+
+	switch($meta_value) {
+		case 1:
+			$points = -5;
+		case 2:
+			$points = -3;
+		case 3:
+			$points = 1;
+		case 4:
+			$points = 5;
+		case 5:
+			$points = 10;
+	}
+
+	if (!is_null($points)) {
+		add_points($post_id, 'post', $points);
+		add_points($user_id, 'user', 1);
+		if ($post_author_id != 0 && !is_super_admin($post_author_id)) {
+			add_points($post_author_id, 'user', $points);
+		}
+	}
 }
 
 add_action('save_post', 'points_for_post_creation', 11, 3);
-add_action('comment_post', 'points_for_comment_creation', 11, 3)
+add_action('comment_post', 'points_for_comment_creation', 11, 3);
+add_action('update_post_meta', 'points_for_post_rating', 11, 4);
 ?>

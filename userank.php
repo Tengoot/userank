@@ -21,4 +21,4 @@ include(USERANK_PLUGIN_DIR . '/includes/options.php');
 include(USERANK_PLUGIN_DIR . '/includes/points_table.php');
 include(USERANK_PLUGIN_DIR . '/includes/user_point_callbacks.php');
 
-register_activation_hook( __FILE__, 'userank_database_install' );
+register_activation_hook(__FILE__, 'userank_database_install');
