@@ -3,13 +3,12 @@
 function add_points($id, $type, $points_to_add) {
 	global $wpdb;
     $table_name = $wpdb->prefix . "userank_points";
+	
+	if (is_null($id) || is_null($type) || is_null($points_to_add))
+		return false;
 
 	$points_row = $wpdb->get_row( "SELECT * FROM $table_name WHERE rankable_id = $id AND rankable_type = '$type' AND date = CURDATE()" );
-	if (!!($points_row)) {
-		// update record
-		$new_points = $points_row->points + $points_to_add;
-		$wpdb->update($table_name, array('points' => $new_points), array('id' =>$points_row->id));
-	} else {
+	if (is_null($points_row)) {
 		// new record
 		$attributes = array(
 			'date' => date("Y-m-d"),
@@ -18,7 +17,13 @@ function add_points($id, $type, $points_to_add) {
 			'rankable_type' => $type
 		);
 		$wpdb->insert($table_name, $attributes);
+	} else {
+		// update record
+		$new_points = $points_row->points + $points_to_add;
+		$wpdb->update($table_name, array('points' => $new_points), array('id' =>$points_row->id));
 	}
+
+	return true;
 }
 
 function points_for_post_creation($post_id, $post, $update) {
@@ -53,13 +58,14 @@ function points_for_post_rating($meta_id, $post_id, $meta_key, $meta_value) {
 	if ($meta_key != 'rating' && !is_user_logged_in()) {
 		return null;
 	}
-
+	
+	$voted = (int) $_REQUEST['rate'];
 	$user = wp_get_current_user();
 	$points = null;
 	$post = get_post($post_id);
 	$post_author_id = $post->post_author;
 
-	switch($meta_value) {
+	switch($voted) {
 		case 1:
 			$points = -5;
 		case 2:
@@ -74,7 +80,7 @@ function points_for_post_rating($meta_id, $post_id, $meta_key, $meta_value) {
 
 	if (!is_null($points)) {
 		add_points($post_id, 'post', $points);
-		add_points($user_id, 'user', 1);
+		add_points($user->id, 'user', 1);
 		if ($post_author_id != 0 && !is_super_admin($post_author_id)) {
 			add_points($post_author_id, 'user', $points);
 		}
@@ -83,5 +89,6 @@ function points_for_post_rating($meta_id, $post_id, $meta_key, $meta_value) {
 
 add_action('save_post', 'points_for_post_creation', 11, 3);
 add_action('comment_post', 'points_for_comment_creation', 11, 3);
-add_action('update_post_meta', 'points_for_post_rating', 11, 4);
+add_action('updated_post_meta', 'points_for_post_rating', 10, 4);
+add_action('added_post_meta', 'points_for_post_rating', 10, 4);
 ?>
