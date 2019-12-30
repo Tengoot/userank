@@ -10,13 +10,13 @@ License: GPL2
 */
 
 // The widget class
-class My_Custom_Widget extends WP_Widget {
+class User_Ranking_Widget extends WP_Widget {
 
 	// Main constructor
 	public function __construct() {
 		parent::__construct(
-			'my_custom_widget',
-			__( 'My Custom Widget', 'text_domain' ),
+			'user_ranking_widget',
+			__( 'User Ranking Widget', 'text_domain' ),
 			array(
 				'customize_selective_refresh' => true,
 			)
@@ -99,50 +99,63 @@ class My_Custom_Widget extends WP_Widget {
 	// Display the widget
 	public function widget( $args, $instance ) {
 
-		extract( $args );
+		global $wpdb;
+		$table_name = $wpdb->prefix . "userank_points";
+		$points_rows = $wpdb->get_results( "SELECT * FROM $table_name WHERE rankable_type = 'user'" );
+
+
+		echo '<table>';
+		foreach ( $points_rows as $points_row ) 
+		{
+			echo '<tr>';
+			echo '<td>' . $points_row->rankable_id . '</td>';
+			echo '<td>' . $points_row->points . '</td>';
+			echo '</tr>';
+		}
+		echo '</table>';
 
 		// Check the widget options
-		$title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
-		$text     = isset( $instance['text'] ) ? $instance['text'] : '';
-		$textarea = isset( $instance['textarea'] ) ?$instance['textarea'] : '';
-		$select   = isset( $instance['select'] ) ? $instance['select'] : '';
-		$checkbox = ! empty( $instance['checkbox'] ) ? $instance['checkbox'] : false;
+		// $title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
+		// $text     = isset( $instance['text'] ) ? $instance['text'] : '';
+		// $textarea = isset( $instance['textarea'] ) ?$instance['textarea'] : '';
+		// $select   = isset( $instance['select'] ) ? $instance['select'] : '';
+		// $checkbox = ! empty( $instance['checkbox'] ) ? $instance['checkbox'] : false;
 
 		// WordPress core before_widget hook (always include )
-		echo $before_widget;
+		// echo $before_widget;
 
 		// Display the widget
-		echo '<div class="widget-text wp_widget_plugin_box">';
+		// echo '<div class="widget-text wp_widget_plugin_box">';
 
-			// Display widget title if defined
-			if ( $title ) {
-				echo $before_title . $title . $after_title;
-			}
+		// 	// Display widget title if defined
+		// 	if ( $title ) {
+		// 		echo $before_title . $title . $after_title;
+		// 	}
 
-			// Display text field
-			if ( $text ) {
-				echo '<p>' . $text . '</p>';
-			}
+		// 	// Display text field
+		// 	if ( $text ) {
+		// 		echo '<p>' . $text . '</p>';
+		// 	}
 
-			// Display textarea field
-			if ( $textarea ) {
-				echo '<p>' . $textarea . '</p>';
-			}
+		// 	// Display textarea field
+		// 	if ( $textarea ) {
+		// 		echo '<p>' . $textarea . '</p>';
+		// 	}
 
-			// Display select field
-			if ( $select ) {
-				echo '<p>' . $select . '</p>';
-			}
+		// 	// Display select field
+		// 	if ( $select ) {
+		// 		echo '<p>' . $select . '</p>';
+		// 	}
 
-			// Display something if checkbox is true
-			if ( $checkbox ) {
-				echo '<p>Something awesome</p>';
-			}
+		// 	// Display something if checkbox is true
+		// 	if ( $checkbox ) {
+		// 		echo '<p>Something awesome</p>';
+		// 	}
 
-		echo '</div>';
+		// echo '</div>';
 
 		// WordPress core after_widget hook (always include )
-		echo $after_widget;
+		// echo $after_widget;
 
 	}
 
@@ -150,6 +163,6 @@ class My_Custom_Widget extends WP_Widget {
 
 
 function userank_register_widgets() {
-	register_widget( 'My_Custom_Widget' );
+	register_widget( 'User_Ranking_Widget' );
 }
 add_action( 'widgets_init', 'userank_register_widgets' );
