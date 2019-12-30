@@ -147,3 +147,9 @@ class My_Custom_Widget extends WP_Widget {
 	}
 
 }
+
+
+function userank_register_widgets() {
+	register_widget( 'My_Custom_Widget' );
+}
+add_action( 'widgets_init', 'userank_register_widgets' );
