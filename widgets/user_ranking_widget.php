@@ -145,6 +145,7 @@ class User_Ranking_Widget extends WP_Widget {
 
 
 function userank_register_widgets() {
-	register_widget( 'User_Ranking_Widget' );
+	register_widget('User_Ranking_Widget');
 }
+
 add_action( 'widgets_init', 'userank_register_widgets' );
