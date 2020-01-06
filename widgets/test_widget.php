@@ -1,15 +1,13 @@
 <?php
 /*
-Plugin Name: My Widget Plugin
-Plugin URI: http://www.wpexplorer.com/create-widget-plugin-wordpress/
-Description: This plugin adds a custom widget.
+Plugin Name: Userank user ranking widget
+Plugin URI: https://github.com/Tengoot/userank
+Description: This plugin adds a custom widget for user ranking.
 Version: 1.0
-Author: AJ Clarke
-Author URI: http://www.wpexplorer.com/create-widget-plugin-wordpress/
-License: GPL2
+Author: Tengoot
+Author URI: https://github.com/Tengoot
 */
 
-// The widget class
 class User_Ranking_Widget extends WP_Widget {
 
 	// Main constructor
@@ -23,16 +21,11 @@ class User_Ranking_Widget extends WP_Widget {
 		);
 	}
 
-	// The widget form (for the backend )
 	public function form( $instance ) {
-
-		// Set widget defaults
 		$defaults = array(
-			'title'    => '',
-			'text'     => '',
-			'textarea' => '',
-			'checkbox' => '',
-			'select'   => '',
+			'title' => '',
+			'number_of_users' => '10',
+			'apply_date_filter' => '',
 		);
 		
 		// Parse current settings with defaults
@@ -44,61 +37,30 @@ class User_Ranking_Widget extends WP_Widget {
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 		</p>
 
-		<?php // Text Field ?>
+		<?php // Numer of users Field ?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>"><?php _e( 'Text:', 'text_domain' ); ?></label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'text' ) ); ?>" type="text" value="<?php echo esc_attr( $text ); ?>" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'number_of_users' ) ); ?>"><?php _e( 'Number of users:', 'text_domain' ); ?></label>
+		    <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'number_of_users' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number_of_users' ) ); ?>" type="text" value="<?php echo esc_attr( $number_of_users ); ?>" />
 		</p>
 
-		<?php // Textarea Field ?>
+		<?php // Apply date filter Checkbox ?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'textarea' ) ); ?>"><?php _e( 'Textarea:', 'text_domain' ); ?></label>
-			<textarea class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'textarea' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'textarea' ) ); ?>"><?php echo wp_kses_post( $textarea ); ?></textarea>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'apply_date_filter' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'apply_date_filter' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $apply_date_filter); ?> />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'apply_date_filter' ) ); ?>"><?php _e( 'Apply date filter', 'text_domain' ); ?></label>
 		</p>
-
-		<?php // Checkbox ?>
-		<p>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'checkbox' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'checkbox' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $checkbox ); ?> />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'checkbox' ) ); ?>"><?php _e( 'Checkbox', 'text_domain' ); ?></label>
-		</p>
-
-		<?php // Dropdown ?>
-		<p>
-			<label for="<?php echo $this->get_field_id( 'select' ); ?>"><?php _e( 'Select', 'text_domain' ); ?></label>
-			<select name="<?php echo $this->get_field_name( 'select' ); ?>" id="<?php echo $this->get_field_id( 'select' ); ?>" class="widefat">
-			<?php
-			// Your options array
-			$options = array(
-				''        => __( 'Select', 'text_domain' ),
-				'option_1' => __( 'Option 1', 'text_domain' ),
-				'option_2' => __( 'Option 2', 'text_domain' ),
-				'option_3' => __( 'Option 3', 'text_domain' ),
-			);
-
-			// Loop through options and add each one to the select dropdown
-			foreach ( $options as $key => $name ) {
-				echo '<option value="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" '. selected( $select, $key, false ) . '>'. $name . '</option>';
-
-			} ?>
-			</select>
-		</p>
-
 	<?php }
 
 	// Update widget settings
 	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
-		$instance['title']    = isset( $new_instance['title'] ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
-		$instance['text']     = isset( $new_instance['text'] ) ? wp_strip_all_tags( $new_instance['text'] ) : '';
-		$instance['textarea'] = isset( $new_instance['textarea'] ) ? wp_kses_post( $new_instance['textarea'] ) : '';
-		$instance['checkbox'] = isset( $new_instance['checkbox'] ) ? 1 : false;
-		$instance['select']   = isset( $new_instance['select'] ) ? wp_strip_all_tags( $new_instance['select'] ) : '';
+		$instance['title'] = isset( $new_instance['title'] ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
+		$instance['number_of_users'] = isset( $new_instance['number_of_users'] ) ? wp_strip_all_tags( $new_instance['number_of_users'] ) : '';
+		$instance['apply_date_filter'] = isset( $new_instance['apply_date_filter'] ) ? 1 : false;
 		return $instance;
 	}
 
 	// Display the widget
 	public function widget( $args, $instance ) {
-
 		extract( $args );
 		$title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
 		echo $before_widget;
