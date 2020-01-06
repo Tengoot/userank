@@ -20,6 +20,11 @@ if(!defined('USERANK_PLUGIN_DIR'))
 include(USERANK_PLUGIN_DIR . '/includes/options.php');
 include(USERANK_PLUGIN_DIR . '/includes/points_table.php');
 include(USERANK_PLUGIN_DIR . '/includes/user_point_callbacks.php');
-include(USERANK_PLUGIN_DIR . '/widgets/test_widget.php');
+include(USERANK_PLUGIN_DIR . '/widgets/user_ranking_widget.php');
 
+//hooks
 register_activation_hook(__FILE__, 'userank_database_install');
+
+//scripts
+// wp_enqueue_script('userank_filter_user_date', USERANK_PLUGIN_DIR . '/js/scripts.js');
+wp_enqueue_script('userank_filter_user_date', plugins_url('/js/scripts.js', __FILE__), array( 'jquery' ), null, true);

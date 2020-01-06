@@ -9,8 +9,6 @@ Author URI: https://github.com/Tengoot
 */
 
 class User_Ranking_Widget extends WP_Widget {
-
-	// Main constructor
 	public function __construct() {
 		parent::__construct(
 			'user_ranking_widget',
@@ -19,6 +17,8 @@ class User_Ranking_Widget extends WP_Widget {
 				'customize_selective_refresh' => true,
 			)
 		);
+		add_action('wp_ajax_ajaxFilterUserRanking', array($this, 'ajaxFilterUserRanking'));
+		add_action('wp_ajax_nopriv_ajaxFilterUserRanking', array($this, 'ajaxFilterUserRanking'));
 	}
 
 	public function form( $instance ) {
@@ -28,7 +28,6 @@ class User_Ranking_Widget extends WP_Widget {
 			'apply_date_filter' => '',
 		);
 		
-		// Parse current settings with defaults
 		extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
 
 		<?php // Widget Title ?>
@@ -50,7 +49,6 @@ class User_Ranking_Widget extends WP_Widget {
 		</p>
 	<?php }
 
-	// Update widget settings
 	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$instance['title'] = isset( $new_instance['title'] ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
@@ -59,30 +57,89 @@ class User_Ranking_Widget extends WP_Widget {
 		return $instance;
 	}
 
-	// Display the widget
 	public function widget( $args, $instance ) {
 		extract( $args );
-		$title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
+		$title = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
+		$number_of_users = isset( $instance['number_of_users'] ) ? $instance['number_of_users'] : '10';
+		$apply_date_filter = !empty($instance['apply_date_filter'] ) ? $instance['apply_date_filter'] : false;
 		echo $before_widget;
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . "userank_points";
 		$user_table_name = $wpdb->prefix . "users";
-		$points_rows = $wpdb->get_results( "SELECT DISTINCT($user_table_name.ID) AS user_id, $user_table_name.display_name AS user_name FROM $table_name INNER JOIN $user_table_name ON $table_name.rankable_id = $user_table_name.ID WHERE rankable_type = 'user' GROUP BY $user_table_name.ID ORDER BY SUM($table_name.points) DESC" );
+		$points_rows = $wpdb->get_results( "SELECT DISTINCT($user_table_name.ID) AS user_id, $user_table_name.display_name AS user_name FROM $table_name INNER JOIN $user_table_name ON $table_name.rankable_id = $user_table_name.ID WHERE rankable_type = 'user' GROUP BY $user_table_name.ID ORDER BY SUM($table_name.points) DESC LIMIT $number_of_users" );
 
 		echo '<div class="widget-text wp_widget_plugin_box">';
 		if ( $title ) {
 			echo $before_title . $title . $after_title;
 		}
 
-		echo "<ul classname='userank-ranking_list'>";
+		echo "<input id='userank_query_limit' type='hidden' value=$number_of_users />";
+
+		if ( $apply_date_filter == true ) {
+			$selected_html = '<p><label for="date_filter_select"></label><br /><select id="userank_user_date_filter" name="userank_user_date_filter[]" />';
+			$selected_html .= '<option value="day" selected="selected">Today</option>';
+			$selected_html .= '<option value="week">This Week</option>';
+			$selected_html .= '<option value="month">This Month</option>';
+			$selected_html .= '<option value="year">This Year</option>';
+			$selected_html .= '</select></p>';
+
+			echo $selected_html;
+		}
+
+		echo "<ol id='userank-user-ranking' classname='userank-ranking_list'>";
 		foreach ( $points_rows as $points_row ) 
 		{
 			echo "<li classname='userank-ranking_item'>" . $points_row->user_name . '</td>';
 		}
-		echo '</ul>';
+		echo '</ol>';
 		echo '</div>';
 		echo $after_widget;
+	}
+
+	public function ajaxFilterUserRanking() {
+		global $wpdb;
+		$table_name = $wpdb->prefix . "userank_points";
+		$user_table_name = $wpdb->prefix . "users";
+
+		$time = $_POST['t'];
+		$number_of_users = $_POST['n'];
+		switch($time) {
+			case 'day':
+			    $interval = 'INTERVAL 1 DAY';
+				break;
+			case 'week':
+			    $interval = 'INTERVAL 7 DAY';
+				break;
+			case 'month':
+			    $interval = 'INTERVAL 1 MONTH';
+				break;
+			case 'year':
+			    $interval = 'INTERVAL 1 YEAR';
+				break;
+			default:
+				$interval = null;
+		}
+
+		$interval_where_clause = null;
+		$limit_clause = null;
+
+		if ($interval) {
+			$interval_where_clause = "AND $table_name.date BETWEEN DATE_SUB(NOW(), $interval) AND NOW()";
+		}
+
+		if ($number_of_users) {
+			$limit_clause = "LIMIT $number_of_users";
+		}
+
+		$points_rows = $wpdb->get_results( "SELECT DISTINCT($user_table_name.ID) AS user_id, $user_table_name.display_name AS user_name FROM $table_name INNER JOIN $user_table_name ON $table_name.rankable_id = $user_table_name.ID WHERE rankable_type = 'user' $interval_where_clause GROUP BY $user_table_name.ID ORDER BY SUM($table_name.points) DESC $limit_clause" );
+
+		foreach ( $points_rows as $points_row ) 
+		{
+			echo "<li classname='userank-ranking_item'>" . $points_row->user_name . '</td>';
+		}
+		
+		die();
 	}
 }
 
