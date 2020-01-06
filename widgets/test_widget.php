@@ -99,66 +99,29 @@ class User_Ranking_Widget extends WP_Widget {
 	// Display the widget
 	public function widget( $args, $instance ) {
 
+		extract( $args );
+		$title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
+		echo $before_widget;
+
 		global $wpdb;
 		$table_name = $wpdb->prefix . "userank_points";
-		$points_rows = $wpdb->get_results( "SELECT * FROM $table_name WHERE rankable_type = 'user'" );
+		$user_table_name = $wpdb->prefix . "users";
+		$points_rows = $wpdb->get_results( "SELECT DISTINCT($user_table_name.ID) AS user_id, $user_table_name.display_name AS user_name FROM $table_name INNER JOIN $user_table_name ON $table_name.rankable_id = $user_table_name.ID WHERE rankable_type = 'user' GROUP BY $user_table_name.ID ORDER BY SUM($table_name.points) DESC" );
 
+		echo '<div class="widget-text wp_widget_plugin_box">';
+		if ( $title ) {
+			echo $before_title . $title . $after_title;
+		}
 
-		echo '<table>';
+		echo "<ul classname='userank-ranking_list'>";
 		foreach ( $points_rows as $points_row ) 
 		{
-			echo '<tr>';
-			echo '<td>' . $points_row->rankable_id . '</td>';
-			echo '<td>' . $points_row->points . '</td>';
-			echo '</tr>';
+			echo "<li classname='userank-ranking_item'>" . $points_row->user_name . '</td>';
 		}
-		echo '</table>';
-
-		// Check the widget options
-		// $title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
-		// $text     = isset( $instance['text'] ) ? $instance['text'] : '';
-		// $textarea = isset( $instance['textarea'] ) ?$instance['textarea'] : '';
-		// $select   = isset( $instance['select'] ) ? $instance['select'] : '';
-		// $checkbox = ! empty( $instance['checkbox'] ) ? $instance['checkbox'] : false;
-
-		// WordPress core before_widget hook (always include )
-		// echo $before_widget;
-
-		// Display the widget
-		// echo '<div class="widget-text wp_widget_plugin_box">';
-
-		// 	// Display widget title if defined
-		// 	if ( $title ) {
-		// 		echo $before_title . $title . $after_title;
-		// 	}
-
-		// 	// Display text field
-		// 	if ( $text ) {
-		// 		echo '<p>' . $text . '</p>';
-		// 	}
-
-		// 	// Display textarea field
-		// 	if ( $textarea ) {
-		// 		echo '<p>' . $textarea . '</p>';
-		// 	}
-
-		// 	// Display select field
-		// 	if ( $select ) {
-		// 		echo '<p>' . $select . '</p>';
-		// 	}
-
-		// 	// Display something if checkbox is true
-		// 	if ( $checkbox ) {
-		// 		echo '<p>Something awesome</p>';
-		// 	}
-
-		// echo '</div>';
-
-		// WordPress core after_widget hook (always include )
-		// echo $after_widget;
-
+		echo '</ul>';
+		echo '</div>';
+		echo $after_widget;
 	}
-
 }
 
 
