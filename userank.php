@@ -22,6 +22,7 @@ include(USERANK_PLUGIN_DIR . '/includes/points_table.php');
 include(USERANK_PLUGIN_DIR . '/includes/meta.php');
 include(USERANK_PLUGIN_DIR . '/includes/user_point_callbacks.php');
 include(USERANK_PLUGIN_DIR . '/includes/nickname_colors.php');
+include(USERANK_PLUGIN_DIR . '/includes/cron.php');
 include(USERANK_PLUGIN_DIR . '/widgets/user_ranking_widget.php');
 
 //hooks
