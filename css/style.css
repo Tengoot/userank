@@ -1,0 +1,10 @@
+.Userank-user-rank-smol {
+	color: graytext;
+	font-size: 0.5em;
+	float: left;
+}
+
+.Userank-user-block {
+	display: inline-flex;
+    flex-flow: column;
+}

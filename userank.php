@@ -28,5 +28,9 @@ include(USERANK_PLUGIN_DIR . '/widgets/user_ranking_widget.php');
 //hooks
 register_activation_hook(__FILE__, 'userank_database_install');
 
-wp_enqueue_script('userank_js', plugins_url('/js/scripts.js', __FILE__), array( 'jquery' ), time(), true);
+function add_theme_scripts() {
+	wp_enqueue_script('userank_js', plugins_url('/js/scripts.js', __FILE__), array( 'jquery' ), time(), true);
+	wp_enqueue_style('userank_css', plugins_url('/css/style.css', __FILE__), [], time());
+}
 
+add_action( 'wp_enqueue_scripts', 'add_theme_scripts' );

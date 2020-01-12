@@ -67,7 +67,7 @@ class User_Ranking_Widget extends WP_Widget {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "userank_points";
 		$user_table_name = $wpdb->prefix . "users";
-		$points_rows = $wpdb->get_results( "SELECT DISTINCT($user_table_name.ID) AS user_id, $user_table_name.display_name AS user_name FROM $table_name INNER JOIN $user_table_name ON $table_name.rankable_id = $user_table_name.ID WHERE rankable_type = 'user' GROUP BY $user_table_name.ID ORDER BY SUM($table_name.points) DESC LIMIT $number_of_users" );
+		$points_rows = $wpdb->get_results( "SELECT DISTINCT($user_table_name.ID) AS user_id, $user_table_name.display_name AS user_name FROM $table_name INNER JOIN $user_table_name ON $table_name.rankable_id = $user_table_name.ID WHERE rankable_type = 'user' AND $table_name.date BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW() GROUP BY $user_table_name.ID ORDER BY SUM($table_name.points) DESC LIMIT $number_of_users" );
 
 		echo '<div class="widget-text wp_widget_plugin_box">';
 		if ( $title ) {
@@ -78,10 +78,10 @@ class User_Ranking_Widget extends WP_Widget {
 
 		if ( $apply_date_filter == true ) {
 			$selected_html = '<p><label for="date_filter_select"></label><br /><select id="userank_user_date_filter" name="userank_user_date_filter[]" />';
-			$selected_html .= '<option value="day" selected="selected">Today</option>';
+			$selected_html .= '<option value="day">Today</option>';
 			$selected_html .= '<option value="week">This Week</option>';
 			$selected_html .= '<option value="month">This Month</option>';
-			$selected_html .= '<option value="year">This Year</option>';
+			$selected_html .= '<option value="year" selected="selected">This Year</option>';
 			$selected_html .= '</select></p>';
 
 			echo $selected_html;
@@ -90,7 +90,11 @@ class User_Ranking_Widget extends WP_Widget {
 		echo "<ol id='userank-user-ranking' classname='userank-ranking_list'>";
 		foreach ( $points_rows as $points_row ) 
 		{
-			echo "<li classname='userank-ranking_item'>" . $points_row->user_name . '</td>';
+			$color = get_user_meta($points_row->user_id, 'nickname_color', true);
+			$link = get_author_posts_url($points_row->user_id);
+			$display_name = "<a href='$link' style='text-decoration: none;'><span style='color: $color;'>$points_row->user_name</a></span>";
+
+			echo "<li classname='userank-ranking_item'>" . $display_name . '</td>';
 		}
 		echo '</ol>';
 		echo '</div>';
@@ -136,7 +140,11 @@ class User_Ranking_Widget extends WP_Widget {
 
 		foreach ( $points_rows as $points_row ) 
 		{
-			echo "<li classname='userank-ranking_item'>" . $points_row->user_name . '</td>';
+			$color = get_user_meta($points_row->user_id, 'nickname_color', true);
+			$link = get_author_posts_url($points_row->user_id);
+			$display_name = "<a href='$link' style='text-decoration: none;'><span style='color: $color;'>$points_row->user_name</a></span>";
+			
+			echo "<li classname='userank-ranking_item'>" . $display_name . '</td>';
 		}
 		
 		die();
