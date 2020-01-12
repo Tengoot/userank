@@ -28,7 +28,7 @@ function add_points($id, $type, $points_to_add) {
 
 function points_for_post_creation($post_id, $post, $update) {
 	$user_id = $post->post_author;
-	if ($update || !!(wp_is_post_revision($post_id)) || $user_id == 0 || is_super_admin($user_id))
+	if ($update || !!(wp_is_post_revision($post_id)) || $user_id == 0 || is_super_admin($user_id) || user_can($user_id, 'manage_options'))
 		return null;
 
 	add_points($user_id, 'user', 10);
@@ -41,7 +41,7 @@ function points_for_comment_creation($comment_id, $comment_approved, $comment_da
 	$post = get_post($post_id);
 	$post_author_id = $post->post_author;
 
-	if ($user_id == 0 || is_super_admin($user_id) || $user_id == $post_author_id)
+	if ($user_id == 0 || is_super_admin($user_id) || $user_id == $post_author_id || user_can($user_id, 'manage_options'))
 		return null;
 
 	add_points($user_id, 'user', $comment_points);
@@ -78,7 +78,7 @@ function points_for_post_rating($meta_id, $post_id, $meta_key, $meta_value) {
 			$points = 10;
 	}
 
-	if (!is_null($points)) {
+	if (!is_null($points) || user_can($user->id, 'manage_options')) {
 		add_points($post_id, 'post', $points);
 		add_points($user->id, 'user', 1);
 		if ($post_author_id != 0 && !is_super_admin($post_author_id)) {

@@ -19,12 +19,18 @@ if(!defined('USERANK_PLUGIN_DIR'))
 // Includes
 include(USERANK_PLUGIN_DIR . '/includes/options.php');
 include(USERANK_PLUGIN_DIR . '/includes/points_table.php');
+include(USERANK_PLUGIN_DIR . '/includes/meta.php');
 include(USERANK_PLUGIN_DIR . '/includes/user_point_callbacks.php');
+include(USERANK_PLUGIN_DIR . '/includes/nickname_colors.php');
+include(USERANK_PLUGIN_DIR . '/includes/cron.php');
 include(USERANK_PLUGIN_DIR . '/widgets/user_ranking_widget.php');
 
 //hooks
 register_activation_hook(__FILE__, 'userank_database_install');
 
-//scripts
-// wp_enqueue_script('userank_filter_user_date', USERANK_PLUGIN_DIR . '/js/scripts.js');
-wp_enqueue_script('userank_filter_user_date', plugins_url('/js/scripts.js', __FILE__), array( 'jquery' ), null, true);
+function add_theme_scripts() {
+	wp_enqueue_script('userank_js', plugins_url('/js/scripts.js', __FILE__), array( 'jquery' ), time(), true);
+	wp_enqueue_style('userank_css', plugins_url('/css/style.css', __FILE__), [], time());
+}
+
+add_action( 'wp_enqueue_scripts', 'add_theme_scripts' );

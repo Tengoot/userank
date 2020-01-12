@@ -1,7 +1,7 @@
 jQuery(function($){
 	  $('#userank_user_date_filter').change(function() {
         $.ajax({
-            url: 'wp-admin/admin-ajax.php',
+            url: "/wp-admin/admin-ajax.php",
             type: 'POST',
             data: {
                 action: 'ajaxFilterUserRanking',
@@ -13,4 +13,11 @@ jQuery(function($){
             }
         });
     });
+	$(document).ready(function() {
+		var toreplace = $('#comments').html();
+		var textArea = document.createElement('textarea');
+		textArea.innerHTML = toreplace;
+			
+		$('#comments').html(textArea.value);
+	});	
 });

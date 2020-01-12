@@ -11,6 +11,10 @@ function userank_plugin_create_menu() {
 function register_userank_plugin_settings() {
     register_setting('userank-plugin-settings-group', 'colors');
     register_setting('userank-plugin-settings-group', 'ranks');
+	register_setting('userank-plugin-settings-group', 'admin_nickname_color');
+	register_setting('userank-plugin-settings-group', 'admin_rank');
+	register_setting('userank-plugin-settings-group', 'guest_nickname_color');
+	register_setting('userank-plugin-settings-group', 'guest_rank');
 }
 
 function userank_plugin_settings_page() {
@@ -28,6 +32,22 @@ function userank_plugin_settings_page() {
       <tr valign="top">
         <th scope="row">Ranks</th>
         <td><input type="text" name="ranks" value="<?php echo esc_attr( get_option('ranks') ); ?>" /></td>
+      </tr>
+	  <tr valign="top">
+        <th scope="row">Admin nickname color</th>
+        <td><input type="text" name="admin_nickname_color" value="<?php echo esc_attr( get_option('admin_nickname_color') ); ?>" /></td>
+      </tr>
+	  <tr valign="top">
+        <th scope="row">Admin rank</th>
+        <td><input type="text" name="admin_rank" value="<?php echo esc_attr( get_option('admin_rank') ); ?>" /></td>
+      </tr>
+	  <tr valign="top">
+        <th scope="row">Guest nickname color</th>
+        <td><input type="text" name="guest_nickname_color" value="<?php echo esc_attr( get_option('guest_nickname_color') ); ?>" /></td>
+      </tr>
+	  <tr valign="top">
+        <th scope="row">Guest rank</th>
+        <td><input type="text" name="guest_rank" value="<?php echo esc_attr( get_option('guest_rank') ); ?>" /></td>
       </tr>
     </table>
 <?php submit_button(); ?>
